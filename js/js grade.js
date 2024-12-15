@@ -1,114 +1,112 @@
+// دالة لاستخراج معلمات الاستعلام من الرابط (query params)
+function getQueryParams() {
+  const params = {};
+  const urlSearchParams = new URLSearchParams(window.location.search);
+  for (const [key, value] of urlSearchParams.entries()) {
+    params[key] = value;
+  }
+  return params;
+}
+
 // Load jQuery and execute logic when DOM is ready
 if (typeof jQuery === "undefined") {
-    const script = document.createElement("script");
-    script.src = "https://code.jquery.com/jquery-3.6.0.min.js";
-    script.onload = function () {
-      handleCognitoCallback();
-    };
-    document.head.appendChild(script);
-  } else {
-    $(document).ready(function () {
-      handleCognitoCallback(); // يمكن استدعاء الدالة هنا إذا كنت تفضل
-    });
-  }
-  
-  /**
-   * دالة لاستخراج معلمات الاستعلام من الرابط (query params)
-   */
-  function getQueryParams() {
-    const params = {};
-    const urlSearchParams = new URLSearchParams(window.location.search);
-    for (const [key, value] of urlSearchParams.entries()) {
-      params[key] = value;
-    }
-    return params;
-  }
-  
-  /**
-   * Handles the Cognito authentication callback.
-   */
-  async function handleCognitoCallback() {
-    const queryParams = getQueryParams();
-    const authCode = queryParams.code;
-  
-    if (authCode) {
-      try {
-        const clientId = CONFIG.app.clientId;
-        const redirectUri = "https://omardevolber.github.io/favicon.ico";
-  
-        // Fetch access token using the authorization code
-        const tokenResponse = await fetch(
-          "https://us-east-1aniwhuagf.auth.us-east-1.amazoncognito.com/oauth2/token",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-            },
-            body: `grant_type=authorization_code&client_id=${clientId}&code=${authCode}&redirect_uri=${encodeURIComponent(
-              redirectUri
-            )}`,
-          }
-        );
-  
-        if (!tokenResponse.ok) {
-          throw new Error("Failed to fetch access token.");
+  const script = document.createElement("script");
+  script.src = "https://code.jquery.com/jquery-3.6.0.min.js";
+  script.onload = function () {
+    handleCognitoCallback();
+  };
+  document.head.appendChild(script);
+} else {
+  $(document).ready(function () {
+    handleCognitoCallback(); // يمكن استدعاء الدالة هنا إذا كنت تفضل
+  });
+}
+
+/**
+ * Handles the Cognito authentication callback.
+ */
+async function handleCognitoCallback() {
+  const queryParams = getQueryParams();
+  const authCode = queryParams.code;
+
+  if (authCode) {
+    try {
+      const clientId = CONFIG.app.clientId;
+      const redirectUri = "https://omardevolber.github.io/favicon.ico";
+
+      // Fetch access token using the authorization code
+      const tokenResponse = await fetch(
+        "https://us-east-1aniwhuagf.auth.us-east-1.amazoncognito.com/oauth2/token",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: `grant_type=authorization_code&client_id=${clientId}&code=${authCode}&redirect_uri=${encodeURIComponent(
+            redirectUri
+          )}`,
         }
-  
-        const tokenData = await tokenResponse.json();
-        const accessToken = tokenData.access_token;
-  
-        // Fetch user information using the access token
-        const userInfoResponse = await fetch(
-          "https://us-east-1aniwhuagf.auth.us-east-1.amazoncognito.com/oauth2/userInfo",
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-  
-        if (!userInfoResponse.ok) {
-          throw new Error("Failed to fetch user information.");
-        }
-  
-        const userInfo = await userInfoResponse.json();
-        const userId = userInfo.sub;
-  
-        // Get the username from userInfo
-        const username = userInfo.email || userInfo.username;
-  
-        // Store userId and username in sessionStorage
-        if (userId) {
-          sessionStorage.setItem("userId", userId);
-        }
-  
-        if (userInfo.username) {
-          sessionStorage.setItem("username", userInfo.username);
-        }
-        // Store name, email, phone_number, etc.
-        if (userInfo.name) {
-          sessionStorage.setItem("name", userInfo.name);
-        }
-  
-        if (userInfo.email) {
-          sessionStorage.setItem("email", userInfo.email);
-        }
-  
-        if (userInfo.phone_number) {
-          sessionStorage.setItem("phone_number", userInfo.phone_number);
-        }
-  
-        // Store the accessToken in sessionStorage
-        sessionStorage.setItem("accessToken", accessToken);
-  
-        // Initialize the dashboard
-        await initializeDashboard();
-      } catch (error) {
-        console.error("Error handling Cognito callback:", error);
+      );
+
+      if (!tokenResponse.ok) {
+        throw new Error("Failed to fetch access token.");
       }
+
+      const tokenData = await tokenResponse.json();
+      const accessToken = tokenData.access_token;
+
+      // Fetch user information using the access token
+      const userInfoResponse = await fetch(
+        "https://us-east-1aniwhuagf.auth.us-east-1.amazoncognito.com/oauth2/userInfo",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      if (!userInfoResponse.ok) {
+        throw new Error("Failed to fetch user information.");
+      }
+
+      const userInfo = await userInfoResponse.json();
+      const userId = userInfo.sub;
+
+      // Get the username from userInfo
+      const username = userInfo.email || userInfo.username;
+
+      // Store userId and username in sessionStorage
+      if (userId) {
+        sessionStorage.setItem("userId", userId);
+      }
+
+      if (userInfo.username) {
+        sessionStorage.setItem("username", userInfo.username);
+      }
+      // Store name, email, phone_number, etc.
+      if (userInfo.name) {
+        sessionStorage.setItem("name", userInfo.name);
+      }
+
+      if (userInfo.email) {
+        sessionStorage.setItem("email", userInfo.email);
+      }
+
+      if (userInfo.phone_number) {
+        sessionStorage.setItem("phone_number", userInfo.phone_number);
+      }
+
+      // Store the accessToken in sessionStorage
+      sessionStorage.setItem("accessToken", accessToken);
+
+      // Initialize the dashboard
+      await initializeDashboard();
+    } catch (error) {
+      console.error("Error handling Cognito callback:", error);
     }
   }
+}
 // عدّل هذا الرابط ليتناسب مع API Gateway لديك
 const fetchApiUrl = "https://s7qtq56dvg.execute-api.us-east-1.amazonaws.com/prod/fetch";
     
