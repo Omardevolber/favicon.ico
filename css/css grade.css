@@ -1,0 +1,61 @@
+/* خط افتراضي */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #eff3f6, #dde3e8);
+    color: #333;
+}
+
+h1 {
+    text-align: center;
+    padding: 20px;
+    margin: 0;
+    background: #4f81bd;
+    color: #fff;
+}
+
+#container {
+    max-width: 600px;
+    margin: 50px auto;
+    background: #fff;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#result {
+    padding: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    min-width: 200px;
+}
+
+table thead tr {
+    background: #4f81bd;
+    color: #fff;
+}
+
+table th,
+table td {
+    padding: 12px;
+    border: 1px solid #ccc;
+}
+
+table th {
+    text-align: left;
+}
+
+table tr:nth-child(even) td {
+    background: #f9f9f9;
+}
+
+.error {
+    color: red;
+    margin: 15px 0;
+    font-weight: bold;
+}
